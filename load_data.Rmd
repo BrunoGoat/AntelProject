@@ -1,0 +1,28 @@
+---
+title: "final_project"
+output: html_document
+---
+
+``` {r setup}
+library(dplyr)
+library(jsonlite)
+library(tidyverse)
+library(purrr)
+
+# load saved data
+load("data_cleaned.RData")
+load("session_df.RData")
+
+# load functions
+source("fixdatafunctions.R")
+```
+
+```{r generate_data}
+clean_df <- clean_data_frame("primera_extraccion_dataset.csv")
+save(clean_df, file = "data_cleaned.RData")
+```
+
+```{r generate_sessions}
+sessions_df <- generate_sessions_df(clean_df)
+save(sessions_df, file = "session_df.RData")
+```
