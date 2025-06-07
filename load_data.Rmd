@@ -10,19 +10,40 @@ library(tidyverse)
 library(purrr)
 
 # load saved data
+setwd("C:/Users/walte/OneDrive/Desktop/Antel/AntelRep/AntelProject/Rdata")
+#Modifiquenlo y corranlo en la consola para no modificar el script
+
 load("data_cleaned.RData")
 load("session_df.RData")
 
 # load functions
-source("fixdatafunctions.R")
+setwd("C:/Users/walte/OneDrive/Desktop/Antel/AntelRep/AntelProject/functions") 
+#Modifiquenlo y corranlo en la consola para no modificar el script
+
+source("fixdatafunctions.R") 
+# Si no les funciona pueden abrir el archivo y cargar las dos funciones a mano
+
 ```
+ESTOS SON LOS CHUNKS PARA GENERAR LOS DATOS NO DEBERIAN CORRERSE YA QUE LOS 
+PUEDEN CARGAR DESDE LA CARPETA Rdata
 
 ```{r generate_data}
-clean_df <- clean_data_frame("primera_extraccion_dataset.csv")
+setwd("C:/Users/walte/OneDrive/Desktop/Antel/AntelRep/AntelProject/data")
+#Modifiquenlo y corranlo en la consola para no modificar el script
+
+
+clean_df <- clean_data_frame("primera_extracción_dataset.csv")
+
+setwd("C:/Users/walte/OneDrive/Desktop/Antel/AntelRep/AntelProject/Rdata")
+#Modifiquenlo y corranlo en la consola para no modificar el script
+
 save(clean_df, file = "data_cleaned.RData")
 ```
 
 ```{r generate_sessions}
 sessions_df <- generate_sessions_df(clean_df)
+
+setwd("C:/Users/walte/OneDrive/Desktop/Antel/AntelRep/AntelProject/Rdata")
+#Modifiquenlo y corranlo en la consola para no modificar el script
 save(sessions_df, file = "session_df.RData")
 ```
