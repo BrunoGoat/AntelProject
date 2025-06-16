@@ -9,7 +9,7 @@ library(randomForest)
 # =====================
 # 2. Cargar el archivo CSV
 # =====================
-df <- read.csv("sessions_df.csv", stringsAsFactors = TRUE)
+df <- read.csv("Rdata/session_df.csv", stringsAsFactors = TRUE)
 
 # =====================
 # 3. Verificar variable objetivo
@@ -80,8 +80,20 @@ mean(comparacion$acierto)
 # =====================
 # 11. Importancia de variables
 # =====================
+
+# Gráfico
 varImpPlot(modelo_rf)
 
+# Numericamente
+importance(modelo_rf)
+
+# Como data frame
+importance_df <- as.data.frame(importance(modelo_rf))
+importance_df <- importance_df[order(-importance_df$MeanDecreaseAccuracy), ]
+head(importance_df, 10)  # Las 10 más importantes
+
+
+#---------------------------------------------------------------------------
 colnames(train_data)
 
 

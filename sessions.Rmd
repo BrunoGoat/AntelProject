@@ -231,6 +231,11 @@ session_df <- session_df %>%
     nro_events, device_category, platform, medium, source, geo_city,
     geo_country, ads_storage, play
   )
+
+session_df <- session_df |>
+  mutate(nro_events_sin_play = ifelse(play == TRUE, nro_events - 1, nro_events))
+session_df <- session_df |> select(-nro_events)
+
 ```
 
 ```{r}

@@ -178,9 +178,10 @@ clean_data_frame <- function(nombre_archivo_csv) {
 
 Cargar dataset
 ``` {r load_dataset}
-df_raw <-read.csv("primera_extraccion_dataset.csv")
+df_raw <- read.csv("data/primera_extracción_dataset.csv", stringsAsFactors = FALSE)
 
 df_original <- df_raw  # Backup original
+
 ```
 
 Extraer ga_session_id desde event_params
