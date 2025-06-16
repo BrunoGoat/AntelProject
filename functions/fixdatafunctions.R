@@ -224,52 +224,57 @@ generate_sessions_df <- function(df) {
       .groups = "drop"
     )
   
+  
+  # 5) Info temporal y conteos ---------------------------------------------
+  info_tiempo <- df2 %>%
+    group_by(ga_session_id) %>%
+    summarise(
+      mean_event_timestamp           = mean(event_timestamp,            na.rm = TRUE),
+      mean_event_previous_timestamp  = mean(event_previous_timestamp,   na.rm = TRUE),
+      first_open_time                = first(first_open_time),
+      user_first_touch_timestamp     = first(user_first_touch_timestamp),
+      nro_events                     = n(),
+      .groups = "drop"
+    )
+  
+  # 6) Resumen principal por sesión ---------------------------------------
+  session_df <- df2 %>%
+    group_by(ga_session_id) %>%
+    summarise(
+      user_pseudo_id          = first(user_pseudo_id),
+      user_engagement         = any(event_name == "user_engagement"),
+      play                    = any(event_name == "play"),
+      session_start           = any(event_name == "session_start"),
+      first_use               = any(event_name == "first_open"),
+      screen_view_count       = sum(event_name == "screen_view"),
+      firebase_screen_class   = last(na.omit(firebase_screen_class)),
+      firebase_previous_class = last(na.omit(firebase_previous_class)),
+      firebase_event_origin   = last(na.omit(firebase_event_origin)),
+      engagement_time_msec    = sum(engagement_time_msec, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    left_join(info_extra_sesion, by = "ga_session_id") %>%
+    left_join(info_tiempo,       by = "ga_session_id")
+  
+  # 7) Renombrar y ordenar columnas ---------------------------------------
+  session_df <- session_df |>
+    mutate(nro_events_sin_play = ifelse(play == TRUE, nro_events - 1, nro_events))
+  
+  session_df %>%
+    rename(
+      date = event_date,
+      id   = ga_session_id
+    ) %>%
+    select(
+      date, id, session_start, first_use, user_engagement,
+      engagement_time_msec, mean_event_timestamp, mean_event_previous_timestamp,
+      first_open_time, user_first_touch_timestamp, screen_view_count,
+      firebase_screen_class, firebase_previous_class, firebase_event_origin,
+      device_category, platform, medium, source, geo_city,
+      geo_country, ads_storage, nro_events_sin_play, play
+    )
+  
 
-# 5) Info temporal y conteos ---------------------------------------------
-info_tiempo <- df2 %>%
-  group_by(ga_session_id) %>%
-  summarise(
-    mean_event_timestamp           = mean(event_timestamp,            na.rm = TRUE),
-    mean_event_previous_timestamp  = mean(event_previous_timestamp,   na.rm = TRUE),
-    first_open_time                = first(first_open_time),
-    user_first_touch_timestamp     = first(user_first_touch_timestamp),
-    nro_events                     = n(),
-    .groups = "drop"
-  )
-
-# 6) Resumen principal por sesión ---------------------------------------
-session_df <- df2 %>%
-  group_by(ga_session_id) %>%
-  summarise(
-    user_pseudo_id          = first(user_pseudo_id),
-    user_engagement         = any(event_name == "user_engagement"),
-    play                    = any(event_name == "play"),
-    session_start           = any(event_name == "session_start"),
-    first_use               = any(event_name == "first_open"),
-    screen_view_count       = sum(event_name == "screen_view"),
-    firebase_screen_class   = last(na.omit(firebase_screen_class)),
-    firebase_previous_class = last(na.omit(firebase_previous_class)),
-    firebase_event_origin   = last(na.omit(firebase_event_origin)),
-    engagement_time_msec    = sum(engagement_time_msec, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  left_join(info_extra_sesion, by = "ga_session_id") %>%
-  left_join(info_tiempo,       by = "ga_session_id")
-
-# 7) Renombrar y ordenar columnas ---------------------------------------
-session_df %>%
-  rename(
-    date = event_date,
-    id   = ga_session_id
-  ) %>%
-  select(
-    date, id, session_start, first_use, user_engagement,
-    engagement_time_msec, mean_event_timestamp, mean_event_previous_timestamp,
-    first_open_time, user_first_touch_timestamp, screen_view_count,
-    firebase_screen_class, firebase_previous_class, firebase_event_origin,
-    nro_events, device_category, platform, medium, source, geo_city,
-    geo_country, ads_storage, play
-  )
 }
 
 
