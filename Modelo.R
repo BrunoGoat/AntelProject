@@ -10,7 +10,9 @@ library(randomForest)
 # 2. Cargar el archivo CSV
 # =====================
 df <- read.csv("Rdata/session_df.csv", stringsAsFactors = TRUE)
-
+df <- sessions_df
+# Opción 2: con dplyr::select()
+df <- df %>% select(-firebase_event_origin)
 # =====================
 # 3. Verificar variable objetivo
 # =====================
@@ -43,17 +45,26 @@ test_data  <- df_model[-train_idx, ]
 # =====================
 # 7. Entrenamiento del modelo Random Forest
 # =====================
-modelo_rf <- randomForest(play ~ ., data = train_data, ntree = 500, importance = TRUE)
+#modelo_rf <- randomForest(play ~ ., data = train_data, ntree = 500, importance = TRUE)
+#install.packages("ranger")
+library(ranger)
+
+modelo_rf <- ranger(play ~ ., data = train_data, num.trees = 500, importance = "impurity")
 
 # =====================
 # 8. Predicción sobre el conjunto de test
 # =====================
-pred_rf <- predict(modelo_rf, newdata = test_data)
+#pred_rf <- predict(modelo_rf, newdata = test_data)
+
+pred_rf <- predict(modelo_rf, data = test_data)$predictions
 
 # =====================
 # 9. Evaluación del modelo
 # =====================
-conf_mat <- confusionMatrix(pred_rf, test_data$play)
+#conf_mat <- confusionMatrix(pred_rf, test_data$play)
+#print(conf_mat)
+
+conf_mat <- confusionMatrix(as.factor(pred_rf), test_data$play)
 print(conf_mat)
 
 # =====================
@@ -63,6 +74,7 @@ comparacion <- data.frame(
   predicho = pred_rf,
   real = test_data$play
 )
+
 
 # Ver primeros 20
 head(comparacion, 20)
@@ -105,4 +117,28 @@ colnames(train_data)
 
 library(caret)
 confusionMatrix(pred_rf, test_data$play, positive = "TRUE")
+
+# =====================
+# 4. Importancia de variables
+# =====================
+
+# Importancia como data frame
+importance_df <- as.data.frame(modelo_rf$variable.importance)
+colnames(importance_df) <- "importance"
+importance_df$variable <- rownames(importance_df)
+
+# Ordenar por importancia
+importance_df <- importance_df %>%
+  arrange(desc(importance))
+
+# Ver top 10
+head(importance_df, 10)
+
+# Gráfico
+ggplot(importance_df[1:15, ], aes(x = reorder(variable, importance), y = importance)) +
+  geom_col(fill = "#0073C2FF") +
+  coord_flip() +
+  labs(title = "Importancia de Variables (ranger)",
+       x = "Variable", y = "Importancia")
+
 
