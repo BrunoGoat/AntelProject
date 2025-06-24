@@ -10,16 +10,16 @@ library(tidyverse)
 library(purrr)
 
 # load saved data
-#setwd("C:/Users/IdeaV15/Desktop/Estadistica/Antel_Proyect/AntelProject/Rdata")
-setwd("C:/Users/walte/OneDrive/Desktop/Antel/AntelRep/AntelProject/Rdata")
+setwd("C:/Users/IdeaV15/Desktop/Estadistica/Antel_Proyect/AntelProject/Rdata")
+#setwd("C:/Users/walte/OneDrive/Desktop/Antel/AntelRep/AntelProject/Rdata")
 #Modifiquenlo y corranlo en la consola para no modificar el script
 
 load("data_cleaned.RData")
 load("session_df.RData")
 
 # load functions
-#setwd("C:/Users/IdeaV15/Desktop/Estadistica/Antel_Proyect/AntelProject/functions")
-setwd("C:/Users/walte/OneDrive/Desktop/Antel/AntelRep/AntelProject/functions") 
+setwd("C:/Users/IdeaV15/Desktop/Estadistica/Antel_Proyect/AntelProject/functions")
+#setwd("C:/Users/walte/OneDrive/Desktop/Antel/AntelRep/AntelProject/functions") 
 #Modifiquenlo y corranlo en la consola para no modificar el script
 
 source("fixdatafunctions.R") 

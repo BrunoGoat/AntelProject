@@ -9,10 +9,10 @@ library(randomForest)
 # =====================
 # 2. Cargar el archivo CSV
 # =====================
-df <- read.csv("Rdata/session_df.csv", stringsAsFactors = TRUE)
+df <- read.csv("Rdata/100obs/sessions_df.csv", stringsAsFactors = TRUE)
 df <- sessions_df
+str(sessions_df)
 # Opción 2: con dplyr::select()
-df <- df %>% select(-firebase_event_origin)
 # =====================
 # 3. Verificar variable objetivo
 # =====================
@@ -33,6 +33,7 @@ df_model <- df_model %>%
     moda <- names(sort(table(.), decreasing = TRUE))[1]
     factor(ifelse(is.na(.), moda, as.character(.)), levels = levels(.))
   }))
+rm(df)
 
 # =====================
 # 6. División en conjunto de entrenamiento y test
@@ -93,12 +94,6 @@ mean(comparacion$acierto)
 # 11. Importancia de variables
 # =====================
 
-# Gráfico
-varImpPlot(modelo_rf)
-
-# Numericamente
-importance(modelo_rf)
-
 # Como data frame
 importance_df <- as.data.frame(importance(modelo_rf))
 importance_df <- importance_df[order(-importance_df$MeanDecreaseAccuracy), ]
@@ -140,5 +135,20 @@ ggplot(importance_df[1:15, ], aes(x = reorder(variable, importance), y = importa
   coord_flip() +
   labs(title = "Importancia de Variables (ranger)",
        x = "Variable", y = "Importancia")
+table(df_model$item_category)
+table(df_model)
 
+# Asegurarse que sea lógico
+app_data$play <- as.logical(app_data$play)
+auto_data$play <- as.logical(auto_data$play)
+
+# Calcular proporciones
+porc_play_app <- mean(app_data$play, na.rm = TRUE) * 100
+porc_play_auto <- mean(auto_data$play, na.rm = TRUE) * 100
+
+# Resultado
+cat("Porcentaje de 'play == TRUE' en 'app':", round(porc_play_app, 2), "%\n")
+cat("Porcentaje de 'play == TRUE' en 'auto':", round(porc_play_auto, 2), "%\n")
+
+table(app_data$play)
 
